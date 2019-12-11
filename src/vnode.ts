@@ -2,10 +2,10 @@
  * vNode Types
  */
 export interface VNode {
-  el: null
-  _isVNode: boolean | null
-  tag: string | Symbol | Function | null
-  data: object | null
+  el: any
+  readonly _isVNode: boolean | null
+  tag: any
+  data: any
   children: VNode[] | VNode | string | null
   flags: VnodeFlags | null
   childrenFlags: ChildrenFlags

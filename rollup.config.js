@@ -16,7 +16,7 @@ import sourceMaps from 'rollup-plugin-sourcemaps'
 // 代码头
 const banner =
     `/*!
- * AnyTouch.js v${pkg.version}
+ * rainx.js v${pkg.version}
  * (c) 2019-${new Date().getFullYear()} Seymoe
  * https://github.com/seymoe/rainx
  * Released under the MIT License.

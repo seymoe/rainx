@@ -8,18 +8,40 @@
   <div id="app">Rainx</div>
   <script src="../dist/rainx.umd.js"></script>
   <script>
-    let app = document.querySelector('#app')
-    app.addEventListener('click', function () {
+    window.onload = function () {
+      let rainx = window.rainx
+      let app = document.querySelector('#app')
       let vnode = rainx.h(
         'ul',
-        null,
+        {
+          id: 'list',
+          style: {
+            padding: '15px'
+          }
+        },
         [
-          rainx.h('li', null, '123456'),
-          rainx.h('li', null, rainx.h('a', null, '链接'))
+          rainx.h('li', {
+            class: 'text-node'
+          }, '测试文本节点'),
+          rainx.h('li', null, rainx.h('a', {
+            href: 'https://www.e7fe.com'
+          }, '趣技社区')),
+          rainx.h('li', null, rainx.h('svg', null, [
+            rainx.h('rect', {
+              width: '200',
+              height: '200',
+              style: {
+                fill: 'rgb(0,0,255)',
+                strokeWidth: 1,
+                stroke: 'rgb(0,0,0)'
+              }
+            }, null)
+          ]))
         ]
       )
       console.log(vnode)
-    })
+      rainx.render(vnode, app)
+    }
   </script>
 </body>
 </html>

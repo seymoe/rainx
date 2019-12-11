@@ -1,8 +1,9 @@
 import h from './h'
+import render from './render'
 
 const rainx = {
   h,
-  createElement: h
+  render
 }
 
 export default rainx
