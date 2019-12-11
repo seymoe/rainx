@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+<head>
+  <meta charset="UTF-8">
+  <title>Rainx</title>
+</head>
+<body>
+  <div id="app">Rainx</div>
+  <script src="../dist/rainx.umd.js"></script>
+  <script>
+    let app = document.querySelector('#app')
+    app.addEventListener('click', function () {
+      let vnode = rainx.h(
+        'ul',
+        null,
+        [
+          rainx.h('li', null, '123456'),
+          rainx.h('li', null, rainx.h('a', null, '链接'))
+        ]
+      )
+      console.log(vnode)
+    })
+  </script>
+</body>
+</html>
