@@ -1,6 +1,6 @@
 import {ChildrenFlags, VNode, VnodeFlags} from './vnode'
 
-// Fragment Flag
+// Fragment / PORTAL
 const FRAGMENT = Symbol('FRAGMENT')
 const PORTAL = Symbol('PORTAL')
 
@@ -15,6 +15,19 @@ const createTextNode = (text: string):VNode => {
     flags: VnodeFlags.TEXT,
     childrenFlags: ChildrenFlags.NO_CHILDREN
   }
+}
+
+// 规范化 children，如果没有key则给其添加key
+const formatChildrenKey = (children:any[]):any[] => {
+  const newChildren = []
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i]
+    if (child.key === null) {
+      child.key = '|' + i
+    }
+    newChildren.push(child)
+  }
+  return newChildren
 }
 
 // 创建 VNode 辅助函数
@@ -48,10 +61,11 @@ const h = (tag: string | symbol | null | Function, data: any, children: any):VNo
       // 单子节点
       childrenFlags = ChildrenFlags.SINGLE_VNODE
     } else {
-      // 多个子节点，需要区分有 key 和无 key 的情况
+      // 多个子节点，无 key 则添加key
       childrenFlags = ChildrenFlags.KEYED_VNODES
+      children = formatChildrenKey(children)
     }
-  } else if (children == null) {
+  } else if (children == null || children === undefined) {
     // 无子节点
     childrenFlags = ChildrenFlags.NO_CHILDREN
   } else if (children._isVNode) {
@@ -74,4 +88,9 @@ const h = (tag: string | symbol | null | Function, data: any, children: any):VNo
   }
 }
 
-export default h
+export {
+  h,
+  createTextNode,
+  FRAGMENT,
+  PORTAL
+}

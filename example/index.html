@@ -39,8 +39,11 @@
           ]))
         ]
       )
-      console.log(vnode)
-      rainx.render(vnode, app)
+      let vnode_fragment = rainx.h(rainx.FRAGMENT, null, [
+        rainx.h('td', null, '12345'), rainx.h('td', null, '67890')
+      ])
+      console.log(vnode_fragment)
+      rainx.render(vnode_fragment, app)
     }
   </script>
 </body>

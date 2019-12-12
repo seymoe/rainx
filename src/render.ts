@@ -1,4 +1,5 @@
 import {ChildrenFlags, VNode, VnodeFlags} from './vnode'
+import { createTextNode } from "./h"
 
 /**
  * 渲染vnode挂载到html标签
@@ -31,6 +32,8 @@ function mount(vnode: any, container:any, isSvg:boolean = false) {
     mountElement(vnode, container, isSvg)
   } else if (flags === VnodeFlags.TEXT) {
     mountText(vnode, container)
+  } else if (flags === VnodeFlags.FRAGMENT) {
+    mountFragment(vnode, container, isSvg)
   }
 }
 
@@ -94,6 +97,33 @@ function mountText(vnode:VNode, container:any) {
     const el = document.createTextNode(vnode.children)
     vnode.el = el
     container.appendChild(el)
+  }
+}
+
+// 挂载代码片段 Fragment
+function mountFragment(vnode:VNode, container:any, isSvg:boolean = false) {
+  const { children, childrenFlags } = vnode
+  switch(childrenFlags) {
+    case ChildrenFlags.SINGLE_VNODE:
+      // 单子节点
+      if (Array.isArray((children)) && children.length === 1) {
+        mount(children[0], container, isSvg)
+      } else {
+        mount(children, container, isSvg)
+      }
+      break
+    case ChildrenFlags.NO_CHILDREN:
+      // 无子节点
+      const placeholder = createTextNode('')
+      mount(placeholder, container, isSvg)
+      break
+    default:
+      if (Array.isArray((children))) {
+        for(let i = 0; i < children.length; i++) {
+          mount(children[i], container, isSvg)
+        }
+      }
+      break
   }
 }
 
