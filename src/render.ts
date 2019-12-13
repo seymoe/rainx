@@ -1,8 +1,11 @@
 import {ChildrenFlags, VNode, VnodeFlags} from './vnode'
-import { createTextNode } from "./h"
+import {createTextNode} from "./h"
+
+// 检测是否是 包含大写字母\value\checked\selected\muted 属性
+const domPropsRegExp = /\[A-Z]|^(?:value|checked|selected|muted)$/
 
 /**
- * 渲染vnode挂载到html标签
+ * 渲染vnode挂载
  * @param vnode
  * @param container
  * 1. 如果没有旧的vnode，有新的vnode，则mount新的vnode
@@ -34,11 +37,17 @@ function mount(vnode: any, container:any, isSvg:boolean = false) {
     mountText(vnode, container)
   } else if (flags === VnodeFlags.FRAGMENT) {
     mountFragment(vnode, container, isSvg)
+  } else if (flags === VnodeFlags.PORTAL) {
+    mountPortal(vnode, container)
+  } else if (flags === VnodeFlags.COMPONENT_STATEFUL) {
+    mountStatefulComponent(vnode, container, isSvg)
+  } else if (flags === VnodeFlags.COMPONENT_FUNCTIONAL) {
+    mountFunctionalComponent(vnode, container,isSvg)
   }
 }
 
 function patch(prevVNode:VNode, vnode:VNode, container:any) {
-
+  console.log('patch')
 }
 
 // 渲染 html 类型的 VNode
@@ -54,7 +63,6 @@ function mountElement(vnode:VNode, container:any, isSvg:boolean = false) {
 
   // 处理节点信息 vnode.data
   if (data && data !== null) {
-    console.log(data)
     for (let key in data) {
       switch (key) {
         case 'style':
@@ -62,9 +70,14 @@ function mountElement(vnode:VNode, container:any, isSvg:boolean = false) {
             el.style[k] = data.style[k]
           }
           break
+        case 'class':
+          el.className = data.class
+          break
         default:
           // 处理其他属性
-          if (typeof data[key] === 'string') {
+          if (domPropsRegExp.test(key)) {
+            el[key] = data[key]
+          } else {
             el.setAttribute(key, data[key])
           }
           break
@@ -87,7 +100,7 @@ function mountElement(vnode:VNode, container:any, isSvg:boolean = false) {
       }
     }
   }
-
+  console.log('CONTAINER', container)
   container.appendChild(el)
 }
 
@@ -108,23 +121,70 @@ function mountFragment(vnode:VNode, container:any, isSvg:boolean = false) {
       // 单子节点
       if (Array.isArray((children)) && children.length === 1) {
         mount(children[0], container, isSvg)
+        vnode.el = children[0].el
       } else {
         mount(children, container, isSvg)
+        vnode.el = children.el
       }
       break
     case ChildrenFlags.NO_CHILDREN:
       // 无子节点
       const placeholder = createTextNode('')
       mount(placeholder, container, isSvg)
+      vnode.el = placeholder.el
       break
     default:
       if (Array.isArray((children))) {
         for(let i = 0; i < children.length; i++) {
           mount(children[i], container, isSvg)
         }
+        vnode.el = children[0].el
       }
       break
   }
+}
+
+// 挂载 Portal
+function mountPortal(vnode:VNode, container:any) {
+  const { tag, children, childrenFlags } = vnode
+  // 获取挂载点
+  const target = typeof tag === 'string' ? document.querySelector(tag) : tag
+  console.log('Portal挂载点', target)
+  if (!target) {
+    throw new Error('Portal need a target as a mount place.')
+    return
+  }
+  console.log(childrenFlags, children)
+  if (childrenFlags === ChildrenFlags.SINGLE_VNODE) {
+    mount(children, target)
+  } else if (childrenFlags === ChildrenFlags.KEYED_VNODES) {
+    if (Array.isArray(children)) {
+      for (let i = 0; i < children.length; i++) {
+        mount(children[i], target)
+      }
+    }
+  }
+}
+
+// 挂载有状态组件
+function mountStatefulComponent(vnode:VNode, container:any, isSvg:boolean = false) {
+  const { tag } = vnode
+  // 创建组件实例
+  const instance = new tag()
+  instance.$vnode = instance.render()
+  // 挂载
+  mount(instance.$vnode, container, isSvg)
+  instance.$el = vnode.el = instance.$vnode.el
+  console.log('Instance', instance)
+}
+
+// 挂载无状态函数式组件
+function mountFunctionalComponent(vnode:VNode, container:any, isSvg:boolean = false) {
+  // 获取vnode
+  const $vnode = vnode.tag()
+  // 挂载
+  mount($vnode, container, isSvg)
+  vnode.el = $vnode.el
 }
 
 export default render

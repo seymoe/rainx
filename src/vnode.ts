@@ -6,7 +6,7 @@ export interface VNode {
   readonly _isVNode: boolean | null
   tag: any
   data: any
-  children: VNode[] | VNode | string | null
+  children: any
   flags: VnodeFlags | null
   childrenFlags: ChildrenFlags
 }
