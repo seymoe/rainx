@@ -1,8 +1,6 @@
 import {ChildrenFlags, VNode, VnodeFlags} from './vnode'
 import {createTextNode} from "./h"
-
-// 检测是否是 包含大写字母\value\checked\selected\muted 属性
-const domPropsRegExp = /\[A-Z]|^(?:value|checked|selected|muted)$/
+import { patch, domPropsRegExp } from './diff'
 
 /**
  * 渲染vnode挂载
@@ -29,7 +27,7 @@ function render(vnode: VNode, container: any) {
   }
 }
 
-function mount(vnode: any, container:any, isSvg:boolean = false) {
+export function mount(vnode: any, container:any, isSvg:boolean = false) {
   let { flags } = vnode
   if (flags === VnodeFlags.HTML || flags === VnodeFlags.SVG) {
     mountElement(vnode, container, isSvg)
@@ -46,10 +44,6 @@ function mount(vnode: any, container:any, isSvg:boolean = false) {
   }
 }
 
-function patch(prevVNode:VNode, vnode:VNode, container:any) {
-  console.log('patch')
-}
-
 // 渲染 html 类型的 VNode
 function mountElement(vnode:VNode, container:any, isSvg:boolean = false) {
   isSvg = isSvg || vnode.flags === VnodeFlags.SVG
@@ -62,7 +56,7 @@ function mountElement(vnode:VNode, container:any, isSvg:boolean = false) {
   const { children, childrenFlags, data } = vnode
 
   // 处理节点信息 vnode.data
-  if (data && data !== null) {
+  if (data) {
     for (let key in data) {
       switch (key) {
         case 'style':
@@ -100,7 +94,6 @@ function mountElement(vnode:VNode, container:any, isSvg:boolean = false) {
       }
     }
   }
-  console.log('CONTAINER', container)
   container.appendChild(el)
 }
 
