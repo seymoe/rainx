@@ -23,6 +23,10 @@ export function patch(prevVNode:VNode, nextVnode:VNode, container:any) {
       patchElement(prevVNode, nextVnode, container)
     } else if (nextFlags === VnodeFlags.TEXT) {
       patchText(prevVNode, nextVnode)
+    } else if (nextFlags === VnodeFlags.FRAGMENT) {
+      patchFragment(prevVNode, nextVnode, container)
+    } else if (nextFlags === VnodeFlags.PORTAL) {
+      patchPortal(prevVNode, nextVnode)
     }
   }
 }
@@ -120,6 +124,9 @@ export function patchData(el:any, key:string, prevValue:any, nextValue:any) {
 
 // 递归patch子节点
 export function patchChildren(prevChildrenFlags:ChildrenFlags, nexChildrenFlags:ChildrenFlags, prevChildren:any, nextChildren:any, container:any) {
+  if (typeof container === 'string') {
+    container = document.querySelector(container)
+  }
   switch (prevChildrenFlags) {
     case ChildrenFlags.SINGLE_VNODE:
       switch (nexChildrenFlags) {
@@ -189,5 +196,50 @@ export function patchText(prevVNode:any, nextVNode:any) {
   const el = (nextVNode.el = prevVNode.el)
   if (prevVNode.children !== nextVNode.children) {
     el.nodeValue = nextVNode.children
+  }
+}
+
+// patch Fragment
+export function patchFragment(prevVNode:any, nextVNode:any, container:any) {
+  // Fragment本身没有节点，直接patch子节点
+  patchChildren(prevVNode.childrenFlags, nextVNode.childrenFlags, prevVNode.children, nextVNode.children, container)
+
+  switch (nextVNode.childrenFlags) {
+    case ChildrenFlags.SINGLE_VNODE:
+      nextVNode.el = nextVNode.children.el
+      break
+    case ChildrenFlags.NO_CHILDREN:
+      nextVNode.el = prevVNode.el
+      break
+    default:
+      nextVNode.el = nextVNode.children[0].el
+      break
+  }
+}
+
+// patch Portal
+export function patchPortal(prevVNode:any, nextVNode:any) {
+  // 容器元素为旧的container
+  patchChildren(prevVNode.childrenFlags, nextVNode.childrenFlags, prevVNode.children, nextVNode.children, prevVNode.tag)
+
+  nextVNode.el = prevVNode.el
+
+  // 如果新旧容器不同，则需要搬运，因为children都是挂载在prevVnode.tag中的
+  if (nextVNode.tag !== prevVNode.tag) {
+    // 获取新的容器
+    const container = typeof nextVNode.tag === 'string' ? document.querySelector(nextVNode.tag) : nextVNode.tag
+
+    switch (nextVNode.childrenFlags) {
+      case ChildrenFlags.SINGLE_VNODE:
+        container.appendChild(nextVNode.children.el)
+        break
+      case ChildrenFlags.NO_CHILDREN:
+        break
+      case ChildrenFlags.MULTIFUL_VNODES:
+        for (let i = 0; i < nextVNode.children.length; i++) {
+          container.appendChild(nextVNode.children[i].el)
+        }
+        break
+    }
   }
 }

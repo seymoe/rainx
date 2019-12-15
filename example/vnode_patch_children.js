@@ -33,8 +33,22 @@ window.onload = function () {
   // const prevVNode = h('div', null, [h('span', null, '1'), h('span', null, '2'), h('span', null, '3')])
   // const nextVNode = h('div', null, '单子节点')
   // --- 多 -》多
-  const prevVNode = h('div', null, [h('span', null, '1'), h('span', null, '2'), h('span', null, '3')])
-  const nextVNode = h('div', null, [h('i', null, '4'), h('i', null, '5'), h('i', null, '6')])
+  // const prevVNode = h('div', null, [h('span', null, '1'), h('span', null, '2'), h('span', null, '3')])
+  // const nextVNode = h('div', null, [h('i', null, '4'), h('i', null, '5'), h('i', null, '6')])
+
+  // 测试：Fragment
+  // const prevVNode = h(rainx.FRAGMENT, null, [h('span', null, '1'), h('span', null, '2'), h('span', null, '3')])
+  // const nextVNode = h(rainx.FRAGMENT, null, [h('i', null, '4'), h('i', null, '5'), h('i', null, '6')])
+
+  // 测试：Portal
+  const prevVNode = h(rainx.PORTAL, {target: '#portal'}, [
+    h('p', null, 'portal旧的节点1'),
+    h('p', null, 'portal旧的节点2')
+  ])
+  const nextVNode = h(rainx.PORTAL, {target: '#portal'}, [
+    h('p', null, 'portal新的节点1'),
+    h('p', null, 'portal新的节点2')
+  ])
 
   rainx.render(prevVNode, app)
   setTimeout(() => {

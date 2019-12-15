@@ -62,7 +62,7 @@ const h = (tag: string | symbol | null | Function, data: any, children: any):VNo
       childrenFlags = ChildrenFlags.SINGLE_VNODE
     } else {
       // 多个子节点，无 key 则添加key
-      childrenFlags = ChildrenFlags.KEYED_VNODES
+      childrenFlags = ChildrenFlags.MULTIFUL_VNODES
       children = formatChildrenKey(children)
     }
   } else if (children == null || children === undefined) {

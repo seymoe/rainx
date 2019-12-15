@@ -150,7 +150,7 @@ function mountPortal(vnode:VNode, container:any) {
   console.log(childrenFlags, children)
   if (childrenFlags === ChildrenFlags.SINGLE_VNODE) {
     mount(children, target)
-  } else if (childrenFlags === ChildrenFlags.KEYED_VNODES) {
+  } else if (childrenFlags === ChildrenFlags.MULTIFUL_VNODES) {
     if (Array.isArray(children)) {
       for (let i = 0; i < children.length; i++) {
         mount(children[i], target)
