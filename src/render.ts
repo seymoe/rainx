@@ -44,7 +44,7 @@ export function mount(vnode: any, container:any, isSvg:boolean = false) {
   }
 }
 
-// 渲染 html 类型的 VNode
+// 渲染html标签
 function mountElement(vnode:VNode, container:any, isSvg:boolean = false) {
   isSvg = isSvg || vnode.flags === VnodeFlags.SVG
   console.log('isSVG', vnode.flags, isSvg)
@@ -64,8 +64,8 @@ function mountElement(vnode:VNode, container:any, isSvg:boolean = false) {
             el.style[k] = data.style[k]
           }
           break
-        case 'class':
-          el.className = data.class
+        case 'className':
+          el.className = data.className
           break
         default:
           // 处理其他属性
@@ -82,11 +82,7 @@ function mountElement(vnode:VNode, container:any, isSvg:boolean = false) {
   // 处理子节点
   if (childrenFlags !== ChildrenFlags.NO_CHILDREN) {
     if (childrenFlags === ChildrenFlags.SINGLE_VNODE) {
-      if (Array.isArray(children) && children.length === 1) {
-        mount(children[0], el, isSvg)
-      } else {
-        mount(children, el, isSvg)
-      }
+      mount(children, el, isSvg)
     } else if (Array.isArray(children)) {
       console.log('CHILDREN', children)
       for (let i = 0; i < children.length; i++) {
@@ -164,11 +160,33 @@ function mountStatefulComponent(vnode:VNode, container:any, isSvg:boolean = fals
   const { tag } = vnode
   // 创建组件实例
   const instance = new tag()
-  instance.$vnode = instance.render()
-  // 挂载
-  mount(instance.$vnode, container, isSvg)
-  instance.$el = vnode.el = instance.$vnode.el
-  console.log('Instance', instance)
+
+  // 定义一个update函数
+  instance._update = function() {
+    // 定义一个 _mounted 属性来判断此次为初次挂载还是后续pathc更新
+    if (instance._mounted) {
+      // patch
+      console.log('patch')
+      // 拿到旧vnode
+      const prevVNode = instance.$vnode
+      // 新vnode
+      const nextVNode = (instance.$vnode = instance.render())
+      // 进行比对
+      patch(prevVNode, nextVNode, vnode.el.parentNode)
+    } else {
+      // 初次mount
+      instance.$vnode = instance.render()
+      // 挂载
+      mount(instance.$vnode, container, isSvg)
+      // 设置_mounted为真
+      this._mounted = true
+      instance.$el = vnode.el = instance.$vnode.el
+      // mounted 钩子函数
+      instance.mounted && instance.mounted()
+    }
+  }
+
+  instance._update()
 }
 
 // 挂载无状态函数式组件

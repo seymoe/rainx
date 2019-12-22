@@ -2,6 +2,28 @@
 
 #### A React & Vue Like JavaScript Library For Building User Interfaces.
 
+### Usage
+
+```
+import { h, render } from 'rainx'
+
+class App {
+  render() {
+    return (
+      <div>
+        <h1>Hello, Rainx!</h1>
+        <ol>
+          <li>React & Vue like.</li>
+          <li>JSX</li>
+        </ol>
+      </div>
+    )
+  }
+}
+
+render(<App/>, document.getElementById('app'))
+```
+
 1. 组件的产出就是 Virtual DOM
 2. VNode的类型分为：HTML/SVG、Text、FRAGMENT、PORTAL、COMPONENNT_FUNCTIONIAL、COMPONENT_STATEFUL
 3. VNode是虚拟节点，VNodeData是对节点的描述，可通过 h 辅助函数进行创建，通过 render 函数将 VNodeData 挂载在真实的DOM中

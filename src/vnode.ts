@@ -6,7 +6,8 @@ export interface VNode {
   readonly _isVNode: boolean | null
   tag: any
   data: any
-  children: any
+  children: any,
+  key: any,
   flags: VnodeFlags | null
   childrenFlags: ChildrenFlags
 }
@@ -35,16 +36,10 @@ export enum VnodeFlags {
  * children types Type
  */
 export enum ChildrenFlags {
-  // 未知
-  UNKNOW_CHILDREN,
   // 无子节点
   NO_CHILDREN,
   // 单子节点
   SINGLE_VNODE,
-  // 用key标示的多子节点
-  KEYED_VNODES,
-  // 未用key标示的多子节点
-  NONE_KEYED_VNODES,
   // 多子节点
   MULTIFUL_VNODES
 }

@@ -27,14 +27,22 @@ export function patch(prevVNode:VNode, nextVnode:VNode, container:any) {
       patchFragment(prevVNode, nextVnode, container)
     } else if (nextFlags === VnodeFlags.PORTAL) {
       patchPortal(prevVNode, nextVnode)
+    } else if (nextFlags === VnodeFlags.COMPONENT_STATEFUL) {
+      patchStatefulComponent(prevVNode, nextVnode, container)
     }
   }
 }
 
 // 替换旧vnode
-export function replaceVnode(prevVnode: VNode, nextVnode:VNode, container:any) {
-  container.removeChild(prevVnode.el)
-  mount(nextVnode, container)
+export function replaceVnode(prevVNode: any, nextVNode:any, container:any) {
+  container.removeChild(prevVNode.el)
+  // 如果将要被移除的 VNode 类型是组件，则需要调用该组件实例的 unmounted 钩子函数
+  if (prevVNode.flags & VnodeFlags.COMPONENT_STATEFUL) {
+    // 类型为有状态组件的 VNode，其 children 属性被用来存储组件实例对象
+    const instance = prevVNode.children
+    instance.unmounted && instance.unmounted()
+  }
+  mount(nextVNode, container)
 }
 
 // 对比html元素
@@ -241,5 +249,20 @@ export function patchPortal(prevVNode:any, nextVNode:any) {
         }
         break
     }
+  }
+}
+
+// patch stateful component
+export function patchStatefulComponent(prevVNode:any, nextVNode:any, container:any) {
+  // tag 属性的值是组件类，通过比较新旧组件类是否相等来判断是否是相同的组件
+  if (nextVNode.tag !== prevVNode.tag) {
+    replaceVnode(prevVNode, nextVNode, container)
+  } else if (nextVNode.flags & VnodeFlags.COMPONENT_STATEFUL) {
+    // 获取组件实例
+    const instance = (nextVNode.children = prevVNode.children)
+    // 更新 props
+    instance.$props = nextVNode.data
+    // 更新组件
+    instance._update()
   }
 }
