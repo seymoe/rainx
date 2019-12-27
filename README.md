@@ -1,6 +1,6 @@
 # Rainx
 
-#### A React & Vue Like JavaScript Library For Building User Interfaces.
+#### A React Like JavaScript Library For Building User Interfaces.
 
 ### Usage
 
@@ -23,6 +23,10 @@ class App {
 
 render(<App/>, document.getElementById('app'))
 ```
+
+### Feture
+
++ Fiber
 
 1. 组件的产出就是 Virtual DOM
 2. VNode的类型分为：HTML/SVG、Text、FRAGMENT、PORTAL、COMPONENNT_FUNCTIONIAL、COMPONENT_STATEFUL

@@ -28,6 +28,7 @@ function render(vnode: VNode, container: any) {
 }
 
 export function mount(vnode: any, container:any, isSvg:boolean = false) {
+  console.log('渲染的VNODE -> ', vnode)
   let { flags } = vnode
   if (flags === VnodeFlags.HTML || flags === VnodeFlags.SVG) {
     mountElement(vnode, container, isSvg)
@@ -47,7 +48,6 @@ export function mount(vnode: any, container:any, isSvg:boolean = false) {
 // 渲染html标签
 function mountElement(vnode:VNode, container:any, isSvg:boolean = false) {
   isSvg = isSvg || vnode.flags === VnodeFlags.SVG
-  console.log('isSVG', vnode.flags, isSvg)
   const el = isSvg
     ? document.createElementNS('http://www.w3.org/2000/svg', vnode.tag)
     : document.createElement(vnode.tag)
@@ -84,7 +84,6 @@ function mountElement(vnode:VNode, container:any, isSvg:boolean = false) {
     if (childrenFlags === ChildrenFlags.SINGLE_VNODE) {
       mount(children, el, isSvg)
     } else if (Array.isArray(children)) {
-      console.log('CHILDREN', children)
       for (let i = 0; i < children.length; i++) {
         mount(children[i], el, isSvg)
       }
@@ -143,7 +142,6 @@ function mountPortal(vnode:VNode, container:any) {
     throw new Error('Portal need a target as a mount place.')
     return
   }
-  console.log(childrenFlags, children)
   if (childrenFlags === ChildrenFlags.SINGLE_VNODE) {
     mount(children, target)
   } else if (childrenFlags === ChildrenFlags.MULTIFUL_VNODES) {
@@ -161,12 +159,13 @@ function mountStatefulComponent(vnode:VNode, container:any, isSvg:boolean = fals
   // 创建组件实例
   const instance = new tag()
 
-  // 定义一个update函数
-  instance._update = function() {
-    // 定义一个 _mounted 属性来判断此次为初次挂载还是后续pathc更新
-    if (instance._mounted) {
+  // 定义一个x_update函数用来更新vnode
+  // 需要一个时机来自动触发vnode更新
+  // 比如state更改、props更改、forceUpdate调用时触发
+  instance.x_update = function() {
+    // 定义一个 x_mounted 属性来判断此次为初次挂载还是后续patch更新
+    if (instance.x_mounted) {
       // patch
-      console.log('patch')
       // 拿到旧vnode
       const prevVNode = instance.$vnode
       // 新vnode
@@ -174,19 +173,20 @@ function mountStatefulComponent(vnode:VNode, container:any, isSvg:boolean = fals
       // 进行比对
       patch(prevVNode, nextVNode, vnode.el.parentNode)
     } else {
-      // 初次mount
+      // 初次mount,执行render方法将vnode赋值给$vnode存储
       instance.$vnode = instance.render()
       // 挂载
       mount(instance.$vnode, container, isSvg)
-      // 设置_mounted为真
-      this._mounted = true
+      // 设置x_mounted为已初次挂载
+      this.x_mounted = true
       instance.$el = vnode.el = instance.$vnode.el
-      // mounted 钩子函数
-      instance.mounted && instance.mounted()
+      console.log('class实例', instance)
+      // componentDidMount 【钩子函数 首次mount触发，只会触发一次】
+      instance.componentDidMount && instance.componentDidMount()
     }
   }
 
-  instance._update()
+  instance.x_update()
 }
 
 // 挂载无状态函数式组件

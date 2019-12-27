@@ -254,6 +254,7 @@ export function patchPortal(prevVNode:any, nextVNode:any) {
 
 // patch stateful component
 export function patchStatefulComponent(prevVNode:any, nextVNode:any, container:any) {
+  console.log('?')
   // tag 属性的值是组件类，通过比较新旧组件类是否相等来判断是否是相同的组件
   if (nextVNode.tag !== prevVNode.tag) {
     replaceVnode(prevVNode, nextVNode, container)
@@ -263,6 +264,6 @@ export function patchStatefulComponent(prevVNode:any, nextVNode:any, container:a
     // 更新 props
     instance.$props = nextVNode.data
     // 更新组件
-    instance._update()
+    instance.x_update()
   }
 }

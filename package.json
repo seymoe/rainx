@@ -1,7 +1,7 @@
 {
   "name": "rainx",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "A React Like JavaScript Library For Building User Interfaces.",
   "main": "dist/rainx.common.js",
   "module": "dist/rainx.esm.js",
   "browser": "dist/rainx.umd.js",
