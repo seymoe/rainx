@@ -21,6 +21,7 @@ abstract class Component {
       console.warn(`setState receive a object or a function...`)
     }
     // 更新partialState
+    
   }
 
   /**

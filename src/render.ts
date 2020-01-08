@@ -178,7 +178,7 @@ function mountStatefulComponent(vnode:VNode, container:any, isSvg:boolean = fals
       // 挂载
       mount(instance.$vnode, container, isSvg)
       // 设置x_mounted为已初次挂载
-      this.x_mounted = true
+      instance.x_mounted = true
       instance.$el = vnode.el = instance.$vnode.el
       console.log('class实例', instance)
       // componentDidMount 【钩子函数 首次mount触发，只会触发一次】
