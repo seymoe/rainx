@@ -4,10 +4,10 @@
 export interface VNode {
   el: any
   readonly _isVNode: boolean | null
-  tag: any
-  data: any
-  children: any,
-  key: any,
+  type: any
+  props: any
+  key: any
+  ref: any
   flags: VnodeFlags | null
   childrenFlags: ChildrenFlags
 }

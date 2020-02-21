@@ -10,5 +10,8 @@ class App {
   }
 }
 
-render(<App/>, document.getElementById('app'))
+render(<div>
+  <h1>h1<p>p</p></h1>
+  <h2>h2</h2>
+</div>, document.getElementById('app'))
 

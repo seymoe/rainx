@@ -1,5 +1,5 @@
 import { h, FRAGMENT, PORTAL } from './h'
-import render from './render'
+import { render } from './reconciler'
 
 import Component from "./core/BaseClasses"
 

@@ -9,10 +9,10 @@ const createTextNode = (text: string):VNode => {
   return {
     el: null,
     _isVNode: true,
-    tag: null,
-    data: null,
+    type: 'text',
+    props: { nodeValue: text },
     key: null,
-    children: text,
+    ref: null,
     flags: VnodeFlags.TEXT,
     childrenFlags: ChildrenFlags.NO_CHILDREN
   }
@@ -32,18 +32,23 @@ const formatChildrenKey = (children:any[]):any[] => {
 }
 
 // 创建 VNode 辅助函数
-const h = (tag: string | symbol | null | Function, data: any, ...args: any[]):VNode => {
-  // 确定 flags 的值
+const h = (type: string | symbol | null | Function, attrs: any, ...args: any[]):VNode => {
+  let props = attrs || {}
+  let ref = props.ref || null
+  let key = props.key || null
+  let children = []
+
+  // 确定 flags，标示 vnode 类型
   let flags = null
-  if (typeof tag === 'string') {
-    flags = tag === 'svg' ? VnodeFlags.SVG : VnodeFlags.HTML
-  } else if (tag === FRAGMENT) {
+  if (typeof type === 'string') {
+    flags = type === 'svg' ? VnodeFlags.SVG : (type === 'text' ? VnodeFlags.TEXT : VnodeFlags.HTML)
+  } else if (type === FRAGMENT) {
     flags = VnodeFlags.FRAGMENT
-  } else if (tag === PORTAL) {
+  } else if (type === PORTAL) {
     flags = VnodeFlags.PORTAL
-    tag = data && data.target
-  } else if (typeof tag === 'function') {
-    if (tag.prototype && tag.prototype.render) {
+    type = props && props.target
+  } else if (typeof type === 'function') {
+    if (type.prototype && type.prototype.render) {
       flags = VnodeFlags.COMPONENT_STATEFUL
     } else {
       flags = VnodeFlags.COMPONENT_FUNCTIONAL
@@ -51,7 +56,6 @@ const h = (tag: string | symbol | null | Function, data: any, ...args: any[]):VN
   }
 
   // 确定 children
-  let children = []
   for (let i = 0; i < args.length; i++) {
     let vnode = args[i]
     let tp = typeof vnode
@@ -66,6 +70,10 @@ const h = (tag: string | symbol | null | Function, data: any, ...args: any[]):VN
   // 确定 childrenFlags 的值
   let childrenFlags = null
   let len = children.length
+  // 如果子节点只有一个，那就直接取，否则为数组形势保存
+  if (len) {
+    props.children = children.length === 1 ? children[0] : children
+  }
   if (len === 0) {
     // 无子节点
     childrenFlags = ChildrenFlags.NO_CHILDREN
@@ -73,20 +81,17 @@ const h = (tag: string | symbol | null | Function, data: any, ...args: any[]):VN
     // 单子节点
     childrenFlags = ChildrenFlags.SINGLE_VNODE
   } else {
-    // 多个子节点，无 key 则添加key
+    // 多个子节点
     childrenFlags = ChildrenFlags.MULTIFUL_VNODES
-    children = formatChildrenKey(children)
   }
-
-  children = children.length === 1 ? children[0] : children
 
   return {
     el: null,
     _isVNode: true,
-    tag,
-    data,
-    children,
-    key: null,
+    type,
+    props,
+    key,
+    ref,
     flags,
     childrenFlags
   }

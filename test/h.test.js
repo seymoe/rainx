@@ -7,9 +7,9 @@ test('Create single div node with no attr and children', () => {
     el: null,
     _isVNode: true,
     tag: 'div',
-    data: null,
+    props: {},
     key: null,
-    children: [],
+    ref: null,
     flags: VnodeFlags.HTML,
     childrenFlags: ChildrenFlags.NO_CHILDREN
   })
@@ -21,9 +21,9 @@ test('Create single svg node with no attr and children', () => {
     el: null,
     _isVNode: true,
     tag: 'svg',
-    data: null,
+    props: {},
     key: null,
-    children: [],
+    ref: null,
     flags: VnodeFlags.SVG,
     childrenFlags: ChildrenFlags.NO_CHILDREN
   })
@@ -32,13 +32,13 @@ test('Create single svg node with no attr and children', () => {
 describe('node with children', () => {
   it('node has a single text children', () => {
     const node = <p>text node</p>
-    expect(node.children).toStrictEqual({
+    expect(node.props.children).toStrictEqual({
       el: null,
       _isVNode: true,
-      tag: null,
-      data: null,
+      tag: 'text',
+      props: { children: 'text node' },
       key: null,
-      children: 'text node',
+      ref: null,
       flags: VnodeFlags.TEXT,
       childrenFlags: ChildrenFlags.NO_CHILDREN
     })
@@ -50,24 +50,24 @@ describe('node with children', () => {
       <p>description</p>
       <span>time</span>
     </div>
-    expect(node.children.length).toEqual(3)
-    expect(node.children).toEqual(expect.arrayContaining([
+    expect(node.props.children.length).toEqual(3)
+    expect(node.props.children).toEqual(expect.arrayContaining([
       {
         el: null,
         _isVNode: true,
         tag: 'h1',
-        data: null,
-        key: '|0',
-        children: {
+        props: { children: {
           el: null,
           _isVNode: true,
-          tag: null,
-          data: null,
+          tag: 'text',
+          props: { children: 'title' },
           key: null,
-          children: 'title',
+          ref: null,
           flags: VnodeFlags.TEXT,
           childrenFlags: ChildrenFlags.NO_CHILDREN
-        },
+        }},
+        key: null,
+        ref: null,
         flags: VnodeFlags.HTML,
         childrenFlags: ChildrenFlags.SINGLE_VNODE
       },
@@ -75,18 +75,18 @@ describe('node with children', () => {
         el: null,
         _isVNode: true,
         tag: 'p',
-        data: null,
-        key: '|1',
-        children: {
+        key: null,
+        ref: null,
+        props:{ children: {
           el: null,
           _isVNode: true,
-          tag: null,
-          data: null,
+          tag: 'text',
+          props: { children: 'description' },
           key: null,
-          children: 'description',
+          ref: null,
           flags: VnodeFlags.TEXT,
           childrenFlags: ChildrenFlags.NO_CHILDREN
-        },
+        }},
         flags: VnodeFlags.HTML,
         childrenFlags: ChildrenFlags.SINGLE_VNODE
       },
@@ -94,18 +94,18 @@ describe('node with children', () => {
         el: null,
         _isVNode: true,
         tag: 'span',
-        data: null,
-        key: '|2',
-        children: {
+        key: null,
+        ref: null,
+        props: { children: {
           el: null,
           _isVNode: true,
-          tag: null,
-          data: null,
+          tag: 'text',
           key: null,
-          children: 'time',
+          ref: null,
+          props: { children: 'time' },
           flags: VnodeFlags.TEXT,
           childrenFlags: ChildrenFlags.NO_CHILDREN
-        },
+        }},
         flags: VnodeFlags.HTML,
         childrenFlags: ChildrenFlags.SINGLE_VNODE
       }
@@ -116,7 +116,8 @@ describe('node with children', () => {
 describe('node\'s props', () => {
   it('node has class、style、and other props', () => {
     const node = <div className={'wrap'} style={{color: 'red'}} key='1'></div>
-    expect(node.data).toStrictEqual({
+    console.log(node.props)
+    expect(node.props).toStrictEqual({
       className: 'wrap',
       style: {color: 'red'},
       key: '1'
@@ -124,19 +125,19 @@ describe('node\'s props', () => {
   })
 })
 
-describe('component render node', () => {
-  it('functionial component', () => {
-    const Func = (txt) => <i label={txt}></i>
-    let node = <Func/>
-    expect(node).toStrictEqual({
-      el: null,
-      _isVNode: true,
-      tag: Func,
-      data: null,
-      key: null,
-      children: [],
-      flags: VnodeFlags.COMPONENT_FUNCTIONAL,
-      childrenFlags: ChildrenFlags.NO_CHILDREN
-    })
-  })
-})
+// describe('component render node', () => {
+//   it('functionial component', () => {
+//     const Func = (txt) => <i label={txt}></i>
+//     let node = <Func/>
+//     expect(node).toStrictEqual({
+//       el: null,
+//       _isVNode: true,
+//       tag: Func,
+//       data: null,
+//       key: null,
+//       children: [],
+//       flags: VnodeFlags.COMPONENT_FUNCTIONAL,
+//       childrenFlags: ChildrenFlags.NO_CHILDREN
+//     })
+//   })
+// })
