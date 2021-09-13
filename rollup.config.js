@@ -15,7 +15,7 @@ import sourceMaps from 'rollup-plugin-sourcemaps'
 
 // 代码头
 const banner =
-    `/*!
+  `/*!
  * rainx.js v${pkg.version}
  * (c) 2019-${new Date().getFullYear()} Seymoe
  * https://github.com/seymoe/rainx
@@ -23,50 +23,50 @@ const banner =
  */`
 
 export default {
-    input: './src/index.ts',
-    output: [
-        {
-            format: 'cjs',
-            // 生成的文件名和路径
-            // package.json的main字段, 也就是模块的入口文件
-            file: pkg.main,
-            banner,
-            sourcemap: true
-        },
-        {
-            format: 'es',
-            // rollup和webpack识别的入口文件, 如果没有该字段, 那么会去读取main字段
-            file: pkg.module,
-            banner,
-            sourcemap: true
-        },
-        {
-            format: 'umd',
-            name: 'rainx',
-            file: pkg.browser,
-            banner,
-            sourcemap: true
-        }
-    ],
-    plugins: [
-        // 代码中的__VERSION__字符串会被package.json中的version字段所替代
-        replace({
-            __VERSION__: pkg.version
-        }),
+  input: './src/index.ts',
+  output: [
+    {
+      format: 'cjs',
+      // 生成的文件名和路径
+      // package.json的main字段, 也就是模块的入口文件
+      file: pkg.main,
+      banner,
+      sourcemap: true
+    },
+    {
+      format: 'es',
+      // rollup和webpack识别的入口文件, 如果没有该字段, 那么会去读取main字段
+      file: pkg.module,
+      banner,
+      sourcemap: true
+    },
+    {
+      format: 'umd',
+      name: 'rainx',
+      file: pkg.browser,
+      banner,
+      sourcemap: true
+    }
+  ],
+  plugins: [
+    // 代码中的__VERSION__字符串会被package.json中的version字段所替代
+    replace({
+      __VERSION__: pkg.version
+    }),
 
-        typescript(),
+    typescript(),
 
-        json(),
+    json(),
 
-        nodeResolve({
-            jsnext: true,
-            main: true
-        }),
+    nodeResolve({
+      jsnext: true,
+      main: true
+    }),
 
-        commonjs({
-            include: 'node_modules/**'
-        }),
+    commonjs({
+      include: 'node_modules/**'
+    }),
 
-        sourceMaps()
-    ]
+    sourceMaps()
+  ]
 }

@@ -1,5 +1,5 @@
-import {ChildrenFlags, VNode, VnodeFlags} from './vnode'
-import {createTextNode} from "./h"
+import { ChildrenFlags, VNode, VnodeFlags } from './vnode'
+import { createTextNode } from "./h"
 import { patch, domPropsRegExp } from './diff'
 
 /**
